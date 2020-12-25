@@ -9,8 +9,8 @@ const middleware = (store) => (next) => (action) => {
     if (
       stats.al > 87 ||
       stats.ar > 87 ||
-      stats.al < 10 ||
-      stats.ar < 10 ||
+      stats.al < 4 ||
+      stats.ar < 4 ||
       action.position.y + 50 > state.params.height
     ) {
       return;
