@@ -1,29 +1,34 @@
-const calculateStats = ({ x, y }, w) => {
+const calculateStats = ({ x, y }, { width, weight, nacelleWidth }) => {
 
   // 1Nm = 10.19716kg*cm
   // 1kg*cm = 0.0980665Nm
 
+  // left x position
+  const lx = x - (nacelleWidth / 2);
+  // right x position
+  const rx = x + (nacelleWidth / 2);
+
   // length left rope
-  const ll = Math.sqrt((x ** 2) + (y ** 2));
+  const ll = Math.sqrt((lx ** 2) + (y ** 2));
   // length right rope
-  const lr = Math.sqrt(((1200 - x) ** 2) + (y ** 2));
+  const lr = Math.sqrt(((width - rx) ** 2) + (y ** 2));
 
   // angle left side
-  const al = Math.atan2(y, x) * 180 / Math.PI;
+  const al = Math.atan2(y, lx) * 180 / Math.PI;
   // angle right side
-  const ar = Math.atan2(y, 1200 - x) * 180 / Math.PI;
+  const ar = Math.atan2(y, width - rx) * 180 / Math.PI;
 
   // force down
-  const fd = w * 9.80665;
+  const fd = weight * 9.80665;
   // force left side
-  const fl = fd / (2 * Math.sin(Math.atan2(y, x)));
+  const fl = fd / (2 * Math.sin(Math.atan2(y, lx)));
   // force rigt side
-  const fr = fd / (2 * Math.sin(Math.atan2(y, 1200 - x)));
+  const fr = fd / (2 * Math.sin(Math.atan2(y, width - rx)));
 
   return ({
     x,
     y,
-    w,
+    w: weight,
     ll,
     lr,
     al,

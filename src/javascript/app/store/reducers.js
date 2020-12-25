@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
+import params from './reducers/paramsReducer';
 import position from './reducers/positionReducer';
-import weight from './reducers/weightReducer';
 
 export default combineReducers({
+  params,
   position,
-  weight,
 });
