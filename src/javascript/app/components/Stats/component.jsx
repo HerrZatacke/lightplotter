@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr } }) => (
+const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc } }) => (
   <table className="stats">
     <tbody>
       <tr>
@@ -44,6 +44,10 @@ const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr } }) => (
         <th>Force right</th>
         <td>{`${fr.toFixed(2)}N`}</td>
       </tr>
+      <tr>
+        <th>Winch Circumference</th>
+        <td>{wc.toFixed(2)}</td>
+      </tr>
     </tbody>
   </table>
 );
@@ -60,6 +64,7 @@ Stats.propTypes = {
     fd: PropTypes.number.isRequired,
     fl: PropTypes.number.isRequired,
     fr: PropTypes.number.isRequired,
+    wc: PropTypes.number.isRequired,
   }).isRequired,
 };
 

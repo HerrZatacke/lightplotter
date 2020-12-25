@@ -1,6 +1,9 @@
 .display {
   background-color: $color-blueish;
   flex-shrink: 0;
+  stroke: #000;
+  stroke-width: 0.25;
+  fill: none;
 
   &__ropes {
     pointer-events: none;

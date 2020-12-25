@@ -34,12 +34,7 @@ const Display = ({ position: { x, y }, params: { width, height, nacelleWidth }, 
       onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
     >
-      <g
-        stroke="#000"
-        strokeWidth="0.25"
-        fill="none"
-        className="display__ropes"
-      >
+      <g className="display__ropes">
         <line x1={x - (nacelleWidth / 2)} y1={y} x2={0} y2={0} />
         <line x1={x + (nacelleWidth / 2)} y1={y} x2={width} y2={0} />
       </g>
