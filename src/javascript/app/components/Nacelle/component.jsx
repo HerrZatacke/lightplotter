@@ -31,6 +31,8 @@ const Nacelle = ({ stats: { x, y, lwr, rwr }, params: { nacelleWidth, winchRadiu
         <line x1={0} x2={0} y1={-winchRadius} y2={winchRadius} />
         <line x1={-winchRadius} x2={winchRadius} y1={0} y2={0} />
       </g>
+
+      <circle className="nacelle__light" cx={x} cy={y + 100} r={5} />
     </g>
   );
 };

@@ -1,5 +1,5 @@
 .display {
-  background-color: $color-blueish;
+  background-color: $color-darkest;
   flex-shrink: 0;
   stroke: #000;
   stroke-width: 0.25;
@@ -7,5 +7,12 @@
 
   &__ropes {
     pointer-events: none;
+  }
+
+  &__path {
+    pointer-events: none;
+    stroke: $color-black;
+    stroke-linecap: round;
+    stroke-width: 1px;
   }
 }

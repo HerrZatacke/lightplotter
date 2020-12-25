@@ -5,6 +5,12 @@ const mapStateToProps = (state) => ({
   stats: calculateStats(state.position, state.params),
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = (dispatch) => ({
+  run: () => {
+    dispatch({
+      type: 'RUN',
+    });
+  },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps);

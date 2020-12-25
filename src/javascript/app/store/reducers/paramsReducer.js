@@ -3,7 +3,7 @@ const paramsReducer = (value = {
   height: 800,
   nacelleWidth: 20,
   weight: 2,
-  winchRadius: 30,
+  winchRadius: 10,
 }) => value;
 
 export default paramsReducer;

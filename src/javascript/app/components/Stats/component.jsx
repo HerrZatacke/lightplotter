@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc } }) => (
+const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc }, run }) => (
   <table className="stats">
     <tbody>
       <tr>
         <th>x</th>
-        <td>{x}</td>
+        <td>{x.toFixed(2)}</td>
       </tr>
       <tr>
         <th>y</th>
-        <td>{y}</td>
+        <td>{y.toFixed(2)}</td>
       </tr>
       <tr>
         <th>Length left</th>
@@ -48,6 +48,17 @@ const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc } }) => (
         <th>Winch Circumference</th>
         <td>{wc.toFixed(2)}</td>
       </tr>
+
+      <tr>
+        <td colSpan={2}>
+          <button
+            type="button"
+            onClick={run}
+          >
+            Run!
+          </button>
+        </td>
+      </tr>
     </tbody>
   </table>
 );
@@ -66,6 +77,7 @@ Stats.propTypes = {
     fr: PropTypes.number.isRequired,
     wc: PropTypes.number.isRequired,
   }).isRequired,
+  run: PropTypes.func.isRequired,
 };
 
 Stats.defaultProps = {

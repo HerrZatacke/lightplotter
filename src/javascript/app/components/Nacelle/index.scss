@@ -1,3 +1,8 @@
 .nacelle {
   pointer-events: none;
+
+  &__light {
+    stroke: none;
+    fill: $color-white;
+  }
 }
