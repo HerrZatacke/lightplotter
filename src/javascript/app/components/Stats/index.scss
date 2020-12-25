@@ -1,0 +1,9 @@
+.stats {
+  background-color: $color-blueish;
+  margin: 40px;
+
+  td, th {
+    padding: 4px 10px;
+    text-align: right;
+  }
+}
