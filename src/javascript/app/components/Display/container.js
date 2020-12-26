@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 const mapStateToProps = (state) => ({
   position: state.position,
   params: state.params,
+  points: state.points,
 });
 
 const mapDispatchToProps = (dispatch) => ({
