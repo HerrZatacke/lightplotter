@@ -1,12 +1,12 @@
-const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius, rpm }) => {
+const calculateStats = ({ x, y }, { width, weight, gondolaWidth, winchRadius, rpm }) => {
 
   // 1Nm = 10.19716kg*cm
   // 1kg*cm = 0.0980665Nm
 
   // left x position
-  const lx = x - (nacelleWidth / 2);
+  const lx = x - (gondolaWidth / 2);
   // right x position
-  const rx = x + (nacelleWidth / 2);
+  const rx = x + (gondolaWidth / 2);
 
   // length left rope
   const ll = Math.sqrt((lx ** 2) + (y ** 2));
@@ -44,6 +44,7 @@ const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius, rp
     x,
     y,
     w: weight,
+    gw: gondolaWidth,
     rpm,
     ms,
     ll,

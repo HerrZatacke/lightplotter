@@ -27,7 +27,7 @@ const handleFileImport = (file) => (
         resolve(paths);
       }
 
-      // const light = document.querySelector('.nacelle__light');
+      // const light = document.querySelector('.gondola__light');
       //
       // light.setAttribute('r', '0');
       // light.style.fill = '#000';

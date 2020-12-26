@@ -4,7 +4,7 @@ import classNames from 'class-names';
 import EditButton from './EditButton';
 
 const Stats = ({
-  stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc, wr, rpm, ms, tl, tr },
+  stats: { x, y, ll, lr, al, ar, w, gw, fd, fl, fr, wc, wr, rpm, ms, tl, tr },
   run,
   updateParam,
   warnings,
@@ -42,12 +42,22 @@ const Stats = ({
         </td>
       </tr>
       <tr className={classNames('stats__row stats__row--border', {
-        'stats__row--warn': warnings.includes('fd'),
+        'stats__row--warn': warnings.includes('gw'),
       })}
       >
         <th>Force down</th>
         <td>{`${fd.toFixed(2)}N`}</td>
         <td />
+      </tr>
+      <tr className={classNames('stats__row', {
+        'stats__row--warn': warnings.includes('gw'),
+      })}
+      >
+        <th>Gondola Width</th>
+        <td>{`${gw.toFixed(0)}mm`}</td>
+        <td>
+          <EditButton updateParam={updateParam} paramKey="gondolaWidth" />
+        </td>
       </tr>
       <tr className={classNames('stats__row', {
         'stats__row--warn': warnings.includes('wr'),
@@ -173,6 +183,7 @@ Stats.propTypes = {
     al: PropTypes.number.isRequired,
     ar: PropTypes.number.isRequired,
     w: PropTypes.number.isRequired,
+    gw: PropTypes.number.isRequired,
     fd: PropTypes.number.isRequired,
     fl: PropTypes.number.isRequired,
     fr: PropTypes.number.isRequired,

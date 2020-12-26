@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Nacelle from '../Nacelle';
+import Gondola from '../Gondola';
 
-const Display = ({ position: { x, y }, params: { width, height, nacelleWidth }, setPosition, points }) => {
+const Display = ({ position: { x, y }, params: { width, height, gondolaWidth }, setPosition, points }) => {
 
   const [active, setActive] = React.useState(false);
 
@@ -35,10 +35,10 @@ const Display = ({ position: { x, y }, params: { width, height, nacelleWidth }, 
       onPointerMove={handlePointerMove}
     >
       <g className="display__ropes">
-        <line x1={x - (nacelleWidth / 2)} y1={y} x2={0} y2={0} />
-        <line x1={x + (nacelleWidth / 2)} y1={y} x2={width} y2={0} />
+        <line x1={x - (gondolaWidth / 2)} y1={y} x2={0} y2={0} />
+        <line x1={x + (gondolaWidth / 2)} y1={y} x2={width} y2={0} />
       </g>
-      <Nacelle />
+      <Gondola />
       {
         points.map((point, index) => (
           <circle
@@ -63,7 +63,7 @@ Display.propTypes = {
   params: PropTypes.shape({
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    nacelleWidth: PropTypes.number.isRequired,
+    gondolaWidth: PropTypes.number.isRequired,
   }).isRequired,
   points: PropTypes.array.isRequired,
   setPosition: PropTypes.func.isRequired,

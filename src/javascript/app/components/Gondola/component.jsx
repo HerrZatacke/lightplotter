@@ -1,18 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Nacelle = ({ stats: { x, y, lwr, rwr }, params: { nacelleWidth, winchRadius } }) => {
+const Gondola = ({ stats: { x, y, lwr, rwr }, params: { gondolaWidth, winchRadius } }) => {
 
-  const lx = x - (nacelleWidth / 2);
-  const rx = x + (nacelleWidth / 2);
+  const lx = x - (gondolaWidth / 2);
+  const rx = x + (gondolaWidth / 2);
 
   return (
-    <g className="nacelle">
+    <g className="gondola">
       <circle cx={lx} cy={y} r="1.5" fill="#000" />
       <circle cx={rx} cy={y} r="1.5" fill="#000" />
 
-      <line x1={x - (nacelleWidth / 2)} x2={x - (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
-      <line x1={x + (nacelleWidth / 2)} x2={x + (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
+      <line x1={x - (gondolaWidth / 2)} x2={x - (gondolaWidth / 2)} y1={y} y2={y + winchRadius + 15} />
+      <line x1={x + (gondolaWidth / 2)} x2={x + (gondolaWidth / 2)} y1={y} y2={y + winchRadius + 15} />
 
       <line x1={x - 5} x2={x - 10} y1={y} y2={y} />
       <line x1={x + 5} x2={x + 10} y1={y} y2={y} />
@@ -37,12 +37,12 @@ const Nacelle = ({ stats: { x, y, lwr, rwr }, params: { nacelleWidth, winchRadiu
         <line x1={-winchRadius} x2={winchRadius} y1={0} y2={0} />
       </g>
 
-      <circle className="nacelle__light" cx={x} cy={y + 100} r={5} />
+      <circle className="gondola__light" cx={x} cy={y + 100} r={5} />
     </g>
   );
 };
 
-Nacelle.propTypes = {
+Gondola.propTypes = {
   stats: PropTypes.shape({
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
@@ -50,12 +50,12 @@ Nacelle.propTypes = {
     rwr: PropTypes.number.isRequired,
   }).isRequired,
   params: PropTypes.shape({
-    nacelleWidth: PropTypes.number.isRequired,
+    gondolaWidth: PropTypes.number.isRequired,
     winchRadius: PropTypes.number.isRequired,
   }).isRequired,
 };
 
-Nacelle.defaultProps = {
+Gondola.defaultProps = {
 };
 
-export default Nacelle;
+export default Gondola;
