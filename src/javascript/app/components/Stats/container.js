@@ -11,6 +11,12 @@ const mapDispatchToProps = (dispatch) => ({
       type: 'RUN',
     });
   },
+  updateParam: (paramKey) => {
+    dispatch({
+      type: 'UPDATE_PARAM',
+      paramKey,
+    });
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps);

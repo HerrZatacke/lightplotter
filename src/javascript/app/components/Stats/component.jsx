@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import EditButton from './EditButton';
 
-const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc, wr, rpm, ms, tl, tr }, run }) => (
+const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc, wr, rpm, ms, tl, tr }, run, updateParam }) => (
   <table className="stats">
     <tbody>
       <tr className="stats__row stats__row--border">
@@ -21,7 +22,9 @@ const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc, wr, rpm, ms, 
       <tr className="stats__row">
         <th>Weight</th>
         <td>{`${w.toFixed(2)}kg`}</td>
-        <td />
+        <td>
+          <EditButton updateParam={updateParam} paramKey="weight" />
+        </td>
       </tr>
       <tr className="stats__row stats__row--border">
         <th>Force down</th>
@@ -29,19 +32,23 @@ const Stats = ({ stats: { x, y, ll, lr, al, ar, w, fd, fl, fr, wc, wr, rpm, ms, 
         <td />
       </tr>
       <tr className="stats__row">
+        <th>Winch Radius</th>
+        <td>{`${wr.toFixed(0)}mm`}</td>
+        <td>
+          <EditButton updateParam={updateParam} paramKey="winchRadius" />
+        </td>
+      </tr>
+      <tr className="stats__row">
         <th>Winch Circumference</th>
         <td>{`${wc.toFixed(0)}mm`}</td>
         <td />
       </tr>
       <tr className="stats__row">
-        <th>Winch Radius</th>
-        <td>{`${wr.toFixed(0)}mm`}</td>
-        <td />
-      </tr>
-      <tr className="stats__row">
         <th>Motor max. rpm</th>
         <td>{`${rpm.toFixed()}rpm`}</td>
-        <td />
+        <td>
+          <EditButton updateParam={updateParam} paramKey="rpm" />
+        </td>
       </tr>
       <tr className="stats__row stats__row--border">
         <th>Max Speed</th>
@@ -123,6 +130,7 @@ Stats.propTypes = {
     tr: PropTypes.number.isRequired,
   }).isRequired,
   run: PropTypes.func.isRequired,
+  updateParam: PropTypes.func.isRequired,
 };
 
 Stats.defaultProps = {

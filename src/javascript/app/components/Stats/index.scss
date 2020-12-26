@@ -10,7 +10,6 @@
     }
   }
 
-
   td, th {
     padding: 5px 10px;
     text-align: right;
@@ -20,5 +19,15 @@
 
   td {
     color: $color-bright-grey;
+  }
+
+  &__edit-param {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: $color-white;
+    font-size: 12px;
+    padding: 0;
+    display: inline-block;
   }
 }
