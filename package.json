@@ -10,7 +10,7 @@
     "build:webpack": "webpack --config ./scripts/webpack.prod.js"
   },
   "author": "Herr Zatacke",
-  "private": true,
+  "license": "MIT",
   "projectConfig": {
     "projectName": "lightplotter"
   },
