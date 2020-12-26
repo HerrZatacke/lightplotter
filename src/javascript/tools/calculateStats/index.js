@@ -1,4 +1,4 @@
-const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius }) => {
+const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius, rpm }) => {
 
   // 1Nm = 10.19716kg*cm
   // 1kg*cm = 0.0980665Nm
@@ -25,6 +25,11 @@ const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius }) 
   // force rigt side
   const fr = fd / (2 * Math.sin(Math.atan2(y, width - rx)));
 
+  // torque right
+  const tr = fr * winchRadius / 1000;
+  // torque left
+  const tl = fl * winchRadius / 1000;
+
   // winch circumference
   const wc = 2 * winchRadius * Math.PI;
   // left winch rotation
@@ -32,10 +37,15 @@ const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius }) 
   // right winch rotation
   const rwr = lr / wc * 360;
 
+  // max speed m/s
+  const ms = wc * rpm / 60 / 1000;
+
   return ({
     x,
     y,
     w: weight,
+    rpm,
+    ms,
     ll,
     lr,
     al,
@@ -44,8 +54,11 @@ const calculateStats = ({ x, y }, { width, weight, nacelleWidth, winchRadius }) 
     fl,
     fr,
     wc,
+    wr: winchRadius,
     lwr,
     rwr,
+    tr,
+    tl,
   });
 };
 

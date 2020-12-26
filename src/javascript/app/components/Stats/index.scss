@@ -1,11 +1,24 @@
 .stats {
-  background-color: $color-darkest;
+  background-color: $color-grey;
   margin-left: 40px;
-  width: 300px;
+  width: 380px;
+  font-size: 12px;
+
+  &__row {
+    &--border {
+      border-bottom: 1px solid $color-bright-grey;
+    }
+  }
+
 
   td, th {
-    padding: 4px 10px;
+    padding: 5px 10px;
     text-align: right;
     white-space: nowrap;
+    min-width: 110px;
+  }
+
+  td {
+    color: $color-bright-grey;
   }
 }

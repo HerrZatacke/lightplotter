@@ -1,9 +1,10 @@
 .display {
-  background-color: $color-darkest;
+  background-color: $color-grey;
   flex-shrink: 0;
   stroke: #000;
-  stroke-width: 0.25;
+  stroke-width: 0.6;
   fill: none;
+  transform: translate(0.5px, 0.5px);
 
   &__ropes {
     pointer-events: none;

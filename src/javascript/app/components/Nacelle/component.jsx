@@ -11,8 +11,13 @@ const Nacelle = ({ stats: { x, y, lwr, rwr }, params: { nacelleWidth, winchRadiu
       <circle cx={lx} cy={y} r="1.5" fill="#000" />
       <circle cx={rx} cy={y} r="1.5" fill="#000" />
 
-      <line x1={x - 0.5 - (nacelleWidth / 2)} x2={x - 0.5 - (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
-      <line x1={x + 0.5 + (nacelleWidth / 2)} x2={x + 0.5 + (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
+      <line x1={x - (nacelleWidth / 2)} x2={x - (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
+      <line x1={x + (nacelleWidth / 2)} x2={x + (nacelleWidth / 2)} y1={y} y2={y + winchRadius + 15} />
+
+      <line x1={x - 5} x2={x - 10} y1={y} y2={y} />
+      <line x1={x + 5} x2={x + 10} y1={y} y2={y} />
+      <line x1={x} x2={x} y1={y - 5} y2={y - 10} />
+      <line x1={x} x2={x} y1={y + 5} y2={y + 10} />
 
       <g
         strokeWidth="1"
