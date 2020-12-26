@@ -8,6 +8,10 @@
     &--border {
       border-bottom: 1px solid $color-bright-grey;
     }
+
+    &--warn {
+      background-color: $color-warn;
+    }
   }
 
   td, th {
