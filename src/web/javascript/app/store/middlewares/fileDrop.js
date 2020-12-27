@@ -48,7 +48,7 @@ const fileDrop = (store) => {
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.warn(error);
       });
   });
 

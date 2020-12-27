@@ -12,7 +12,7 @@ module.exports = {
   },
   entry: {
     main: [
-      path.join(process.cwd(), 'src', 'javascript', 'index.js'),
+      path.join(process.cwd(), 'src', 'web', 'javascript', 'index.js'),
     ],
   },
   module: {
@@ -21,7 +21,7 @@ module.exports = {
         enforce: 'pre',
         test: /\.(js|jsx)$/,
         loader: 'eslint-loader',
-        include: path.join(process.cwd(), 'src'),
+        include: path.join(process.cwd(), 'src', 'web'),
       },
       {
         test: /\.(js|jsx)$/,
@@ -31,7 +31,7 @@ module.exports = {
             cacheDirectory: true,
           },
         },
-        include: path.join(process.cwd(), 'src'),
+        include: path.join(process.cwd(), 'src', 'web'),
       },
       {
         test: /\.(scss|css)$/,
@@ -71,7 +71,7 @@ module.exports = {
             options: {
               sassOptions: {
                 sourceMap: true,
-                includePaths: [path.join(process.cwd(), 'src')],
+                includePaths: [path.join(process.cwd(), 'src', 'web')],
               },
             },
           },
@@ -79,7 +79,7 @@ module.exports = {
             loader: 'sass-resources-loader',
             options: {
               resources: [
-                path.join(process.cwd(), 'src', 'scss', 'auto-imports', '**', '*.scss'),
+                path.join(process.cwd(), 'src', 'web', 'scss', 'auto-imports', '**', '*.scss'),
               ],
             },
           },
@@ -94,7 +94,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'lightplotter',
-      template: './src/assets/index.html',
+      template: './src/web/assets/index.html',
       filename: 'index.html',
       chunks: ['main'],
     }),
