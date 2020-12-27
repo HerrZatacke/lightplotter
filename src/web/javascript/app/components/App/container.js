@@ -1,6 +1,8 @@
 import { connect } from 'react-redux';
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state) => ({
+  hasParams: !!state.params,
+});
 
 const mapDispatchToProps = () => ({});
 

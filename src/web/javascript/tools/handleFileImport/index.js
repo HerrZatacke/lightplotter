@@ -76,10 +76,10 @@ const handleFileImport = (file) => (
               //   return null;
               // }
 
-              const { x, y } = path.getPointAtLength(index);
+              const point = path.getPointAtLength(index);
               return {
-                x,
-                y,
+                x: Math.round(point.x),
+                y: Math.round(point.y),
                 r,
                 color,
               };

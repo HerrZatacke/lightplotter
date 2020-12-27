@@ -7,7 +7,6 @@ const Display = ({
   position: { x, y },
   params: { width, height, gondolaWidth },
   setPosition,
-  points,
   animationRunning,
 }) => {
 
@@ -48,18 +47,6 @@ const Display = ({
         <line x1={x + (gondolaWidth / 2)} y1={y} x2={width} y2={0} />
       </g>
       <Gondola />
-      {
-        points.map((point, index) => (
-          <circle
-            key={`point_${index}`}
-            cx={point.x}
-            cy={point.y}
-            r={point.r}
-            fill={point.color}
-            stroke="none"
-          />
-        ))
-      }
     </svg>
   );
 };
@@ -74,7 +61,6 @@ Display.propTypes = {
     height: PropTypes.number.isRequired,
     gondolaWidth: PropTypes.number.isRequired,
   }).isRequired,
-  points: PropTypes.array.isRequired,
   setPosition: PropTypes.func.isRequired,
   animationRunning: PropTypes.bool.isRequired,
 };

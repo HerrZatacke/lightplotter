@@ -1,4 +1,10 @@
-const calculateStats = ({ x, y }, { width, weight, gondolaWidth, winchRadius, rpm }) => {
+const calculateStats = ({ x, y }, params) => {
+
+  if (!params) {
+    return {};
+  }
+
+  const { width, weight, gondolaWidth, winchRadius, rpm } = params;
 
   // 1Nm = 10.19716kg*cm
   // 1kg*cm = 0.0980665Nm
@@ -63,4 +69,5 @@ const calculateStats = ({ x, y }, { width, weight, gondolaWidth, winchRadius, rp
   });
 };
 
-export default calculateStats;
+module.exports = calculateStats;
+// export default calculateStats;

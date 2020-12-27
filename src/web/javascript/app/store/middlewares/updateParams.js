@@ -1,17 +1,21 @@
 const updateParams = (store) => (next) => (action) => {
 
   if (action.type === 'UPDATE_PARAM') {
-    const { params } = store.getState();
+    const { params, hasConnection } = store.getState();
 
     // eslint-disable-next-line no-alert
     const newValue = window.prompt(action.paramKey, params[action.paramKey]) || params[action.paramKey];
 
-    store.dispatch({
-      type: 'UPDATE_PARAMS',
-      params: {
-        [action.paramKey]: parseFloat(newValue),
-      },
-    });
+
+    if (hasConnection) {
+      store.dispatch({
+        type: 'SEND_PARAM',
+        params: {
+          [action.paramKey]: parseFloat(newValue),
+        },
+      });
+    }
+
 
     return;
   }

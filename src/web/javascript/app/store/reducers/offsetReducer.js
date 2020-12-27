@@ -1,7 +1,7 @@
 const offsetReducer = (offset = 0, action) => {
   switch (action.type) {
     case 'SET_OFFSET':
-      return action.payload;
+      return action.offset;
     default:
       return offset;
   }

@@ -1,18 +1,22 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Display from '../Display';
 import Stats from '../Stats';
 import DragOver from '../DragOver';
-// import PropTypes from 'prop-types';
 
-const App = () => (
-  <div className="app">
-    <Display />
-    <Stats />
-    <DragOver />
-  </div>
+const App = ({ hasParams }) => (
+  hasParams ? (
+    <div className="app">
+      <Display />
+      <Stats />
+      <DragOver />
+    </div>
+  ) : null
 );
 
-App.propTypes = {};
+App.propTypes = {
+  hasParams: PropTypes.bool.isRequired,
+};
 
 App.defaultProps = {};
 

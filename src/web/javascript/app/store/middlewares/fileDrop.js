@@ -43,7 +43,7 @@ const fileDrop = (store) => {
     Promise.all(files.map(handleFileImport))
       .then((results) => {
         store.dispatch({
-          type: 'SET_POINTS',
+          type: 'SEND_POINTS',
           points: results.flat(),
         });
       })
