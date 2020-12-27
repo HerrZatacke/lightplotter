@@ -1,10 +1,14 @@
 let startTime = null;
 
 const animationRunningReducer = (animationRunning = false, action) => {
+  let newVal;
+
   switch (action.type) {
-    case 'SET_ANIMATION_RUNNING':
-      if (animationRunning !== action.isRunning) {
-        if (action.isRunning === true) {
+    case 'SERVER_MESSAGE':
+      newVal = action.isRunning !== undefined ? action.isRunning : animationRunning;
+
+      if (animationRunning !== newVal) {
+        if (newVal === true) {
           startTime = (new Date()).getTime();
         } else {
           // eslint-disable-next-line no-console
@@ -12,7 +16,7 @@ const animationRunningReducer = (animationRunning = false, action) => {
         }
       }
 
-      return action.isRunning;
+      return newVal;
     default:
       return animationRunning;
   }

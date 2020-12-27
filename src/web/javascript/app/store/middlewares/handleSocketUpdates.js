@@ -26,40 +26,10 @@ const handleSocketUpdates = (store) => {
   socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
 
-    if (message.offset !== undefined) {
-      dispatch({
-        type: 'SET_OFFSET',
-        offset: message.offset,
-      });
-    }
-
-    if (message.point !== undefined) {
-      dispatch({
-        type: 'SET_POSITION',
-        position: message.point,
-      });
-    }
-
-    if (message.canAcceptNewImage !== undefined) {
-      dispatch({
-        type: 'SET_SERVER_BUSY',
-        serverBusy: !message.canAcceptNewImage,
-      });
-    }
-
-    if (message.isRunning !== undefined) {
-      dispatch({
-        type: 'SET_ANIMATION_RUNNING',
-        isRunning: message.isRunning,
-      });
-    }
-
-    if (message.params !== undefined) {
-      dispatch({
-        type: 'UPDATE_PARAMS',
-        params: message.params,
-      });
-    }
+    dispatch({
+      type: 'SERVER_MESSAGE',
+      ...message,
+    });
   });
 
   return (next) => (action) => {
