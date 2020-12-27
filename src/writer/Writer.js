@@ -18,7 +18,10 @@ class Writer {
       offset: 0,
       canAcceptNewImage: true,
       isRunning: false,
-      point: { x: 250, y: 700 },
+      ropes: {
+        l: 1000,
+        r: 1000,
+      },
       params: defaultParams,
     };
   }
@@ -63,11 +66,25 @@ class Writer {
     });
   }
 
+  pointFromRopes({ ll, lr }) {
+    const c = this.status.params.width - this.status.params.gondolaWidth;
+    const y = ll * Math.sin(Math.acos(((lr ** 2) - (ll ** 2) - (c ** 2)) / (-2 * ll * c)));
+    const x = Math.sqrt((ll ** 2) - (y ** 2)) + (this.status.params.gondolaWidth / 2);
+
+    return {
+      x,
+      y,
+    };
+  }
+
   updateStatus(changes) {
     Object.assign(this.status, changes);
 
-    if (changes.offset !== undefined) {
-      Object.assign(changes, { point: this.status.point });
+    if (changes.ropes !== undefined) {
+      Object.assign(changes, {
+        point: this.pointFromRopes(changes.ropes),
+        ropes: undefined,
+      });
     }
 
     this.sendStatus(changes);
@@ -151,8 +168,6 @@ class Writer {
       return;
     }
 
-    const delay = 20;
-
     const point = this.points[this.status.offset];
 
     if (!point) {
@@ -161,15 +176,22 @@ class Writer {
     }
 
     const offset = (this.status.offset + 1) % this.points.length;
-
     const { ll, lr } = calculateStats(point, this.status.params);
 
+    const llDiff = this.status.ropes.ll - ll;
+    const lrDiff = this.status.ropes.lr - lr;
+
+    const delay = Math.ceil(Math.abs(llDiff) + Math.abs(lrDiff)) * 7;
+
     // eslint-disable-next-line no-console
-    console.info(`Moving to x:${point.x} y:${point.y} ${offset}/${this.points.length} | left:${ll} right:${lr} | (${(offset / this.points.length * 100).toFixed(1)}%)`);
+    console.info(`Moving to x:${point.x} y:${point.y} ${offset}/${this.points.length} | left:${ll} right:${lr} | (${(offset / this.points.length * 100).toFixed(1)}%) | delay:${delay}ms`);
 
     this.updateStatus({
       offset,
-      point,
+      ropes: {
+        ll,
+        lr,
+      },
     });
 
     const atLastPoint = this.status.offset === 0;

@@ -30,7 +30,13 @@ const handleSocketUpdates = (store) => {
       dispatch({
         type: 'SET_OFFSET',
         offset: message.offset,
-        point: message.point,
+      });
+    }
+
+    if (message.point !== undefined) {
+      dispatch({
+        type: 'SET_POSITION',
+        position: message.point,
       });
     }
 
