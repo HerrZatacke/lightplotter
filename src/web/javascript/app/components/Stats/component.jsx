@@ -6,8 +6,12 @@ import EditButton from './EditButton';
 const Stats = ({
   stats: { x, y, ll, lr, al, ar, w, gw, fd, fl, fr, wc, wr, rpm, ms, tl, tr },
   run,
+  stop,
   updateParam,
   warnings,
+  hasConnection,
+  serverBusy,
+  animationRunning,
 }) => (
   <table className="stats">
     <tbody>
@@ -160,16 +164,26 @@ const Stats = ({
         <td>{`${(tr * 10.19716).toFixed(2)}kg•cm`}</td>
       </tr>
 
-      <tr className="stats__row">
-        <td colSpan={2}>
-          <button
-            type="button"
-            onClick={run}
-          >
-            Run!
-          </button>
-        </td>
-      </tr>
+      { hasConnection ? (
+        <tr className="stats__row stats__row--border">
+          <td colSpan={3}>
+            <button
+              disabled={serverBusy || animationRunning}
+              type="button"
+              onClick={run}
+            >
+              Run!
+            </button>
+            <button
+              disabled={serverBusy}
+              type="button"
+              onClick={stop}
+            >
+              Stop!
+            </button>
+          </td>
+        </tr>
+      ) : null }
     </tbody>
   </table>
 );
@@ -195,8 +209,12 @@ Stats.propTypes = {
     tr: PropTypes.number.isRequired,
   }).isRequired,
   run: PropTypes.func.isRequired,
+  stop: PropTypes.func.isRequired,
   updateParam: PropTypes.func.isRequired,
   warnings: PropTypes.array.isRequired,
+  hasConnection: PropTypes.bool.isRequired,
+  serverBusy: PropTypes.bool.isRequired,
+  animationRunning: PropTypes.bool.isRequired,
 };
 
 Stats.defaultProps = {

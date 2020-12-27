@@ -6,6 +6,10 @@
   fill: none;
   transform: translate(0.5px, 0.5px);
 
+  &--is-running {
+    background-color: $color-black;
+  }
+
   &__ropes {
     pointer-events: none;
   }

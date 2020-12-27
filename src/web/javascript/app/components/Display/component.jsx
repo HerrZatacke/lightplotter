@@ -1,8 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'class-names';
 import Gondola from '../Gondola';
 
-const Display = ({ position: { x, y }, params: { width, height, gondolaWidth }, setPosition, points }) => {
+const Display = ({
+  position: { x, y },
+  params: { width, height, gondolaWidth },
+  setPosition,
+  points,
+  animationRunning,
+}) => {
 
   const [active, setActive] = React.useState(false);
 
@@ -27,7 +34,9 @@ const Display = ({ position: { x, y }, params: { width, height, gondolaWidth }, 
 
   return (
     <svg
-      className="display"
+      className={classNames('display', {
+        'display--is-running': animationRunning,
+      })}
       width={width}
       height={height}
       onPointerDown={handlePointerDown}
@@ -67,6 +76,7 @@ Display.propTypes = {
   }).isRequired,
   points: PropTypes.array.isRequired,
   setPosition: PropTypes.func.isRequired,
+  animationRunning: PropTypes.bool.isRequired,
 };
 
 Display.defaultProps = {
