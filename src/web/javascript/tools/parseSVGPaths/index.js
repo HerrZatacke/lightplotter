@@ -1,5 +1,11 @@
+const tmpSVG = document.createElement('svg');
+document.body.appendChild(tmpSVG);
+
 const parseSVGPaths = (paths) => (
   paths.map((path) => {
+
+    tmpSVG.appendChild(path);
+
     const r = (parseInt(window.getComputedStyle(path).strokeWidth, 10) || 4) / 2;
     const color = window.getComputedStyle(path).stroke || '#f00';
     return (

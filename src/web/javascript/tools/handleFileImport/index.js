@@ -1,5 +1,3 @@
-const tmpSVG = document.createElement('svg');
-document.body.appendChild(tmpSVG);
 
 const handleFileImport = (file) => (
   new Promise((resolve, reject) => {
@@ -16,10 +14,6 @@ const handleFileImport = (file) => (
       const parser = new DOMParser();
       const doc = parser.parseFromString(ev.target.result, 'text/xml');
       const paths = [...doc.querySelectorAll('path')];
-
-      paths.forEach((path) => {
-        tmpSVG.appendChild(path);
-      });
 
       if (!paths || !paths.length) {
         reject(new Error('no paths/invalid svg'));
