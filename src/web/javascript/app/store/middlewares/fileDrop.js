@@ -1,4 +1,5 @@
 import handleFileImport from '../../../tools/handleFileImport';
+import parseSVGPaths from '../../../tools/parseSVGPaths';
 
 const fileDrop = (store) => {
   const root = document.querySelector('#app');
@@ -41,6 +42,8 @@ const fileDrop = (store) => {
     }
 
     Promise.all(files.map(handleFileImport))
+      .then((paths) => paths.flat())
+      .then(parseSVGPaths)
       .then((results) => {
         store.dispatch({
           type: 'SEND_POINTS',

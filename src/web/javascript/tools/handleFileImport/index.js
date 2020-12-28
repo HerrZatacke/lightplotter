@@ -26,69 +26,10 @@ const handleFileImport = (file) => (
       } else {
         resolve(paths);
       }
-
-      // const light = document.querySelector('.gondola__light');
-      //
-      // light.setAttribute('r', '0');
-      // light.style.fill = '#000';
-      //
-      // const moveToNextPoint = (points) => {
-      //   const point = points.pop();
-      //   if (point === undefined) {
-      //     light.setAttribute('r', '0');
-      //     light.style.fill = '#000';
-      //     return;
-      //   }
-      //
-      //   light.setAttribute('r', Math.ceil((point.width / 2) + 2).toString(10));
-      //   light.style.fill = point.color;
-      //
-      //   store.dispatch({
-      //     type: 'SET_POSITION',
-      //     position: point,
-      //   });
-      //
-      //   window.setTimeout(() => {
-      //     moveToNextPoint(points);
-      //   }, 2.5);
-      // };
-      //
-      // window.setTimeout(() => {
-      //   moveToNextPoint(allPoints);
-      // }, 2000);
-
-      /**/
-
     };
 
     reader.readAsText(file);
   })
-    .then((paths) => (
-      paths.map((path) => {
-        const r = (parseInt(window.getComputedStyle(path).strokeWidth, 10) || 4) / 2;
-        const color = window.getComputedStyle(path).stroke || '#f00';
-        return (
-          Array(Math.ceil(path.getTotalLength()))
-            .fill(null)
-            .map((_, index) => {
-
-              // if (index % 5) {
-              //   return null;
-              // }
-
-              const point = path.getPointAtLength(index);
-              return {
-                x: Math.round(point.x),
-                y: Math.round(point.y),
-                r,
-                color,
-              };
-            })
-            .filter(Boolean)
-        );
-      })
-    )
-      .flat())
 );
 
 export default handleFileImport;
