@@ -1,19 +1,35 @@
 import defaultParams from '../../../tools/defaultParams/index.json';
 
+const toDefault = (dispatch) => {
+  dispatch({
+    type: 'SET_HAS_CONNECTION',
+    hasConnection: false,
+  });
+
+  dispatch({
+    type: 'UPDATE_PARAMS',
+    params: defaultParams,
+  });
+};
+
 const handleSocketUpdates = (store) => {
+
   const { dispatch } = store;
+
+  if (window.location.protocol === 'https:') {
+    window.setTimeout(() => {
+      toDefault(dispatch);
+    }, 250);
+
+    return (next) => (action) => {
+      next(action);
+    };
+  }
+
   const socket = new WebSocket(`ws://${window.location.hostname}:3001/writer`);
 
   socket.addEventListener('close', () => {
-    dispatch({
-      type: 'SET_HAS_CONNECTION',
-      hasConnection: false,
-    });
-
-    dispatch({
-      type: 'UPDATE_PARAMS',
-      params: defaultParams,
-    });
+    toDefault(dispatch);
   });
 
   socket.addEventListener('open', () => {

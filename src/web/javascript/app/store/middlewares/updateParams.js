@@ -14,8 +14,14 @@ const updateParams = (store) => (next) => (action) => {
           [action.paramKey]: parseFloat(newValue),
         },
       });
+    } else {
+      store.dispatch({
+        type: 'UPDATE_PARAMS',
+        params: {
+          [action.paramKey]: parseFloat(newValue),
+        },
+      });
     }
-
 
     return;
   }
