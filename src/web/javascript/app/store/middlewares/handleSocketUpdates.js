@@ -42,6 +42,16 @@ const handleSocketUpdates = (store) => {
   socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
 
+    // if (message.point) {
+    //   const cv = document.querySelector('svg.display');
+    //   const c = document.createElement('circle');
+    //   c.setAttribute('cx', message.point.x);
+    //   c.setAttribute('cy', message.point.y);
+    //   c.setAttribute('r', 5);
+    //   c.classList.add('gondola__light');
+    //   cv.appendChild(c);
+    // }
+
     dispatch({
       type: 'SERVER_MESSAGE',
       ...message,

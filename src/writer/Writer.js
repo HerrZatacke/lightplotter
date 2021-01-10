@@ -1,7 +1,19 @@
+const fs = require('fs');
+const path = require('path');
 const chalk = require('chalk');
 const defaultParams = require('../web/javascript/tools/defaultParams');
 const calculateStats = require('../web/javascript/tools/calculateStats');
 // const getOs = require('../../scripts/tools/getOs');
+
+const file = fs.createWriteStream(path.join(process.cwd(), 'steps.txt'));
+file.write('      setColors(BRIGHT);\n');
+
+const factor = 3600 / 220; // 3600 ticks per revolution by winch circumference
+
+let maxL = -5000;
+let minL = 5000;
+let maxR = -5000;
+let minR = 5000;
 
 class Writer {
 
@@ -181,10 +193,22 @@ class Writer {
     const llDiff = this.status.ropes.ll - ll;
     const lrDiff = this.status.ropes.lr - lr;
 
-    const delay = Math.ceil(Math.abs(llDiff) + Math.abs(lrDiff)) * 7;
+    // const delay = Math.ceil(Math.abs(llDiff) + Math.abs(lrDiff)) * 7;
+    const delay = 1;
 
     // eslint-disable-next-line no-console
     console.info(`Moving to x:${point.x} y:${point.y} ${offset}/${this.points.length} | left:${ll} right:${lr} | (${(offset / this.points.length * 100).toFixed(1)}%) | delay:${delay}ms`);
+
+    const calcLeft = (1530 - ll) * factor;
+    const calcRight = (1530 - lr) * factor;
+
+    maxL = Math.max(maxL, calcLeft);
+    minL = Math.min(minL, calcLeft);
+    maxR = Math.max(maxR, calcRight);
+    minR = Math.min(minR, calcRight);
+
+    const txt = `      roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, ${Math.round(calcLeft)}, ACCEL, SPEED, DECEL, ${Math.round(calcRight)}, 0);\n`;
+    file.write(txt);
 
     this.updateStatus({
       offset,
@@ -200,6 +224,7 @@ class Writer {
       if (!atLastPoint) {
         this.startAnimation();
       } else {
+        file.write(`      setColors(0);\n\n      // max left: ${maxL}\n      // min left: ${minL}\n      // max right: ${maxR}\n      // min right: ${minR}\n`);
         this.stopAnimation();
       }
     }, delay);

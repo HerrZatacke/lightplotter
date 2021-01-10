@@ -13,9 +13,9 @@ const parseSVGPaths = (paths) => (
         .fill(null)
         .map((_, index) => {
 
-          // if (index % 5) {
-          //   return null;
-          // }
+          if (index % 5) {
+            return null;
+          }
 
           const point = path.getPointAtLength(index);
           return {
