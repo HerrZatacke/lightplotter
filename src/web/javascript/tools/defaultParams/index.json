@@ -1,7 +1,7 @@
 {
-  "width": 1200,
-  "height": 800,
-  "gondolaWidth": 200,
+  "width": 2300,
+  "height": 1250,
+  "gondolaWidth": 80,
   "winchRadius": 35,
   "weight": 2,
   "rpm": 150
