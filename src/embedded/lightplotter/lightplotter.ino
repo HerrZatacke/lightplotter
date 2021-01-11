@@ -29,19 +29,25 @@ String html9 = "<button onClick=\"call('/test_2')\">test 2000 4000</button> <cod
 String html10 = "<button onClick=\"call('/test_3')\">test 4000 4000</button> <code>roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 4000, ACCEL, SPEED, DECEL, 4000, 1)</code><br>";
 String html11 = "<button onClick=\"call('/test_4')\">test 4000 2000</button> <code>roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 4000, ACCEL, SPEED, DECEL, 2000, 1)</code><br>";
 // String html12 = "<button onClick=\"fetch('/shape').then(updateInfo);\">shape</button><br>";
+// String html13 = "<button onClick=\"fetch('/flush').then(updateInfo);\">What does flush do?</button><br>";
 String html88 = "<pre id='status'></pre><script>const noConn = (err) => {document.querySelector('#status').innerText = err.toString()}; const updateInfo = (res) => res.json().then((info) => document.querySelector('#status').innerText = JSON.stringify(info, null, 2)); const call = (url) => {const controller = new AbortController(); const to = setTimeout(() => controller.abort(), 900); fetch(url, { signal: controller.signal }).then(updateInfo).then(() => {clearTimeout(to)}).catch(noConn);}; setInterval(() => {call('/info')}, 1000);</script>";
 String html99 = "</body></html>";
 String request = "";
 
 #define PIN 5
 #define NUMPIXELS 1
-#define DELAYVAL 50
+#define DELAYVAL 500
 #define BRIGHT 63
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_RGB + NEO_KHZ800);
+unsigned long blink_nextMillis = 0;
+byte cIndex = 0;
+byte bright = BRIGHT;
+int colors[12];
 
 void setup() {
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(ap_name, pw);
+  blink_nextMillis = millis() + DELAYVAL;
 
   while (wifiMulti.run() != WL_CONNECTED) {
     delay(250);
@@ -52,19 +58,21 @@ void setup() {
   pixels.begin();
 }
 
-byte bright = BRIGHT;
-int colors[6];
-
 void setColors(byte b) {
   colors[0] = pixels.Color(b, 0, 0);
-  colors[1] = pixels.Color(b / 2, b / 2, 0);
-  colors[2] = pixels.Color(0, b, 0);
-  colors[3] = pixels.Color(0, b / 2, b / 2);
-  colors[4] = pixels.Color(0, 0, b);
-  colors[5] = pixels.Color(b / 2, 0, b / 2);
+  colors[1] = pixels.Color(0, 0, 0);
+  colors[2] = pixels.Color(b, b, 0);
+  colors[3] = pixels.Color(0, 0, 0);
+  colors[4] = pixels.Color(0, b, 0);
+  colors[5] = pixels.Color(0, 0, 0);
+  colors[6] = pixels.Color(0, b, b);
+  colors[7] = pixels.Color(0, 0, 0);
+  colors[8] = pixels.Color(0, 0, b);
+  colors[9] = pixels.Color(0, 0, 0);
+  colors[10] = pixels.Color(b, 0, b);
+  colors[11] = pixels.Color(0, 0, 0);
 }
 
-byte cIndex = 0;
 
 void sendInfo(WiFiClient client) {
 
@@ -111,11 +119,13 @@ void getBuffers(uint8_t *buffers) {
 
 void loop() {
 
-  cIndex = (cIndex + 1) % 6;
-
-  pixels.setPixelColor(0, colors[cIndex]);
-  pixels.show();
-  delay(DELAYVAL);
+  unsigned long currentMillis = millis();
+  if (currentMillis >= blink_nextMillis) {
+    blink_nextMillis = currentMillis + DELAYVAL;
+    cIndex = (cIndex + 1) % 12;
+    pixels.setPixelColor(0, colors[cIndex]);
+    pixels.show();
+  }
 
   WiFiClient client = server.available();
 
@@ -124,6 +134,7 @@ void loop() {
 
     request = client.readStringUntil('\r');
     if (request.indexOf("info") > 0){ sendInfo(client); return; }
+    //if (request.indexOf("flush") > 0){ roboclaw.flush(); sendInfo(client); return; }
 
     else if (request.indexOf("test_1") > 0){
       roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 2000, ACCEL, SPEED, DECEL, 2000, 1);
@@ -166,6 +177,7 @@ void loop() {
     client.print(html10);
     client.print(html11);
     // client.print(html12);
+//    client.print(html13);
 
     client.print(html88);
     client.print(html99);
