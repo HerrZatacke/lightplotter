@@ -1,4 +1,4 @@
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h> // remove this line to work without neopixels
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266WiFi.h>
 #include "RoboClaw.h"
@@ -22,8 +22,13 @@ String html2 = "<button onClick=\"call('/motor1_on')\">motor 1 on</button> <code
 String html3 = "<button onClick=\"call('/motor1_off')\">motor 1 off</button> <code>roboclaw.ForwardM1(0x80, 0)</code><br>";
 String html4 = "<button onClick=\"call('/motor2_on')\">motor 2 on</button> <code>roboclaw.ForwardM2(0x80, 63)</code><br>";
 String html5 = "<button onClick=\"call('/motor2_off')\">motor 2 off</button> <code>roboclaw.ForwardM2(0x80, 0)</code><br>";
+#ifdef ADAFRUIT_NEOPIXEL_H
 String html6 = "<button onClick=\"call('/led_on')\">led on</button> <code>setColors(BRIGHT)</code><br>";
 String html7 = "<button onClick=\"call('/led_off')\">led off</button> <code>setColors(0)</code><br>";
+#else
+String html6 = "<button onClick=\"call('/led_on')\">led on</button> <code>digitalWrite(LED, LOW)</code><br>";
+String html7 = "<button onClick=\"call('/led_off')\">led off</button> <code>digitalWrite(LED, HIGH)</code><br>";
+#endif
 String html8 = "<button onClick=\"call('/test_1')\">test 2000 2000</button> <code>roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 2000, ACCEL, SPEED, DECEL, 2000, 1)</code><br>";
 String html9 = "<button onClick=\"call('/test_2')\">test 2000 4000</button> <code>roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 2000, ACCEL, SPEED, DECEL, 4000, 1)</code><br>";
 String html10 = "<button onClick=\"call('/test_3')\">test 4000 4000</button> <code>roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, 4000, ACCEL, SPEED, DECEL, 4000, 1)</code><br>";
@@ -34,6 +39,7 @@ String html88 = "<pre id='status'></pre><script>const noConn = (err) => {documen
 String html99 = "</body></html>";
 String request = "";
 
+#ifdef ADAFRUIT_NEOPIXEL_H
 #define PIN 5
 #define NUMPIXELS 1
 #define DELAYVAL 500
@@ -43,21 +49,31 @@ unsigned long blink_nextMillis = 0;
 byte cIndex = 0;
 byte bright = BRIGHT;
 int colors[12];
+#else
+#define LED 2
+#endif
 
 void setup() {
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(ap_name, pw);
-  blink_nextMillis = millis() + DELAYVAL;
 
   while (wifiMulti.run() != WL_CONNECTED) {
     delay(250);
   }
   server.begin();
   roboclaw.begin(38400);
+
+#ifdef ADAFRUIT_NEOPIXEL_H
+  blink_nextMillis = millis() + DELAYVAL;
   setColors(BRIGHT);
   pixels.begin();
+#else
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
+#endif
 }
 
+#ifdef ADAFRUIT_NEOPIXEL_H
 void setColors(byte b) {
   colors[0] = pixels.Color(b, 0, 0);
   colors[1] = pixels.Color(0, 0, 0);
@@ -72,7 +88,7 @@ void setColors(byte b) {
   colors[10] = pixels.Color(b, 0, b);
   colors[11] = pixels.Color(0, 0, 0);
 }
-
+#endif
 
 void sendInfo(WiFiClient client) {
 
@@ -100,8 +116,10 @@ void sendInfo(WiFiClient client) {
   client.print(",\"voltage\":");
   client.print((float)roboclaw.ReadMainBatteryVoltage(0x80)/10);
 
+#ifdef ADAFRUIT_NEOPIXEL_H
   client.print(",\"led\":");
   client.print(colors[0] == 0 ? "false" : "true");
+#endif
   client.print("}");
 }
 
@@ -119,6 +137,7 @@ void getBuffers(uint8_t *buffers) {
 
 void loop() {
 
+#ifdef ADAFRUIT_NEOPIXEL_H
   unsigned long currentMillis = millis();
   if (currentMillis >= blink_nextMillis) {
     blink_nextMillis = currentMillis + DELAYVAL;
@@ -126,6 +145,7 @@ void loop() {
     pixels.setPixelColor(0, colors[cIndex]);
     pixels.show();
   }
+#endif
 
   WiFiClient client = server.available();
 
@@ -162,8 +182,24 @@ void loop() {
     else if (request.indexOf("motor1_off") > 0){ roboclaw.ForwardM1(0x80, 0); sendInfo(client); return; }
     else if (request.indexOf("motor2_on") > 0){ roboclaw.ForwardM2(0x80, 63); sendInfo(client); return; }
     else if (request.indexOf("motor2_off") > 0){ roboclaw.ForwardM2(0x80, 0); sendInfo(client); return; }
-    else if (request.indexOf("led_on") > 0){ setColors(BRIGHT); sendInfo(client); return; }
-    else if (request.indexOf("led_off") > 0){ setColors(0); sendInfo(client); return; }
+
+    else if (request.indexOf("led_on") > 0){
+#ifdef ADAFRUIT_NEOPIXEL_H
+      setColors(BRIGHT);
+#else
+      digitalWrite(LED, LOW);
+#endif
+      sendInfo(client); return;
+    }
+
+    else if (request.indexOf("led_off") > 0){
+#ifdef ADAFRUIT_NEOPIXEL_H
+      setColors(0);
+#else
+      digitalWrite(LED, HIGH);
+#endif
+      sendInfo(client); return;
+    }
 
     client.print(html1);
     client.print(html2);
@@ -177,7 +213,7 @@ void loop() {
     client.print(html10);
     client.print(html11);
     // client.print(html12);
-//    client.print(html13);
+    // client.print(html13);
 
     client.print(html88);
     client.print(html99);
