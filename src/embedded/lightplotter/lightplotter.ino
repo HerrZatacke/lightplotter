@@ -183,23 +183,13 @@ void loop() {
     else if (request.indexOf("motor2_on") > 0){ roboclaw.ForwardM2(0x80, 63); sendInfo(client); return; }
     else if (request.indexOf("motor2_off") > 0){ roboclaw.ForwardM2(0x80, 0); sendInfo(client); return; }
 
-    else if (request.indexOf("led_on") > 0){
 #ifdef ADAFRUIT_NEOPIXEL_H
-      setColors(BRIGHT);
+    else if (request.indexOf("led_on") > 0){ setColors(BRIGHT); sendInfo(client); return; }
+    else if (request.indexOf("led_off") > 0){ setColors(0); sendInfo(client); return; }
 #else
-      digitalWrite(LED, LOW);
+    else if (request.indexOf("led_on") > 0){ digitalWrite(LED, LOW); sendInfo(client); return; }
+    else if (request.indexOf("led_off") > 0){ digitalWrite(LED, HIGH); sendInfo(client); return;}
 #endif
-      sendInfo(client); return;
-    }
-
-    else if (request.indexOf("led_off") > 0){
-#ifdef ADAFRUIT_NEOPIXEL_H
-      setColors(0);
-#else
-      digitalWrite(LED, HIGH);
-#endif
-      sendInfo(client); return;
-    }
 
     client.print(html1);
     client.print(html2);
