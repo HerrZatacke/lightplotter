@@ -14,11 +14,6 @@ const Gondola = ({ stats: { x, y, lwr, rwr }, params: { gondolaWidth, winchRadiu
       <line x1={x - (gondolaWidth / 2)} x2={x - (gondolaWidth / 2)} y1={y} y2={y + winchRadius + 15} />
       <line x1={x + (gondolaWidth / 2)} x2={x + (gondolaWidth / 2)} y1={y} y2={y + winchRadius + 15} />
 
-      <line x1={x - 5} x2={x - 10} y1={y} y2={y} />
-      <line x1={x + 5} x2={x + 10} y1={y} y2={y} />
-      <line x1={x} x2={x} y1={y - 5} y2={y - 10} />
-      <line x1={x} x2={x} y1={y + 5} y2={y + 10} />
-
       <g
         strokeWidth="1"
         transform={`translate(${lx - winchRadius},${y + winchRadius + 15}) rotate(${-lwr})`}
@@ -37,7 +32,7 @@ const Gondola = ({ stats: { x, y, lwr, rwr }, params: { gondolaWidth, winchRadiu
         <line x1={-winchRadius} x2={winchRadius} y1={0} y2={0} />
       </g>
 
-      <circle className="gondola__light" cx={x} cy={y + 100} r={5} />
+      <circle className="gondola__light" cx={x} cy={y} r={5} />
     </g>
   );
 };
