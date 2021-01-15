@@ -5,15 +5,15 @@ const defaultParams = require('../web/javascript/tools/defaultParams');
 const calculateStats = require('../web/javascript/tools/calculateStats');
 // const getOs = require('../../scripts/tools/getOs');
 
-const file = fs.createWriteStream(path.join(process.cwd(), 'steps.txt'));
-file.write('      setColors(BRIGHT);\n');
+const file = fs.createWriteStream(path.join(process.cwd(), '/src/embedded/lightplotter/shape.h'));
+file.write('\nuint32_t shape[][3] = {\n');
 
 const factor = 3600 / 220; // 3600 ticks per revolution by winch circumference
 
-let maxL = -5000;
-let minL = 5000;
-let maxR = -5000;
-let minR = 5000;
+let maxL = -Infinity;
+let minL = Infinity;
+let maxR = -Infinity;
+let minR = Infinity;
 
 class Writer {
 
@@ -189,11 +189,12 @@ class Writer {
 
     const offset = (this.status.offset + 1) % this.points.length;
     const { ll, lr } = calculateStats(point, this.status.params);
+    const { color } = point;
 
-    const llDiff = this.status.ropes.ll - ll;
-    const lrDiff = this.status.ropes.lr - lr;
-
+    // const llDiff = this.status.ropes.ll - ll;
+    // const lrDiff = this.status.ropes.lr - lr;
     // const delay = Math.ceil(Math.abs(llDiff) + Math.abs(lrDiff)) * 7;
+
     const delay = 1;
 
     // eslint-disable-next-line no-console
@@ -207,7 +208,7 @@ class Writer {
     maxR = Math.max(maxR, calcRight);
     minR = Math.min(minR, calcRight);
 
-    const txt = `      roboclaw.SpeedAccelDeccelPositionM1M2(0x80, ACCEL, SPEED, DECEL, ${Math.round(calcLeft)}, ACCEL, SPEED, DECEL, ${Math.round(calcRight)}, 0);\n`;
+    const txt = `  {${Math.round(calcLeft)}, ${Math.round(calcRight)}, ${color}},\n`;
     file.write(txt);
 
     this.updateStatus({
@@ -224,7 +225,7 @@ class Writer {
       if (!atLastPoint) {
         this.startAnimation();
       } else {
-        file.write(`      setColors(0);\n\n      // max left: ${maxL}\n      // min left: ${minL}\n      // max right: ${maxR}\n      // min right: ${minR}\n`);
+        file.write(`};\n\n#define SHAPE_SIZE ${this.points.length}\nint shapeIndex = 1 + SHAPE_SIZE;\n// max left: ${maxL}\n// min left: ${minL}\n// max right: ${maxR}\n// min right: ${minR}\n\n`);
         this.stopAnimation();
       }
     }, delay);
