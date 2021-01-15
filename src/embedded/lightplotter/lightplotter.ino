@@ -3,14 +3,19 @@
 #include <ESP8266WiFi.h>
 #include "RoboClaw.h"
 #include "credentials.h"
+#include "shape.h"
 
 ESP8266WiFiMulti wifiMulti;
 
 RoboClaw roboclaw = RoboClaw(&Serial, 10000);
 
-#define ACCEL 10000
-#define SPEED 5000
-#define DECEL 10000
+#define REEL_SPEED 25
+#define HOME_SPEED 1200
+#define ACCEL 1000
+#define SPEED 12000
+#define DECEL 1000
+
+#define POS_THRESHOLD 120
 
 const char pw[] = WIFI_CREDENTIALS_PASS;
 const char ap_name[] = WIFI_CREDENTIALS_AP;
@@ -23,37 +28,24 @@ String html3 = "<button onMouseDown=\"call('/motor1_unreel')\" onMouseUp=\"call(
 String html4 = "<button onMouseDown=\"call('/motor2_reel_in')\" onMouseUp=\"call('/motors_stop')\">Reel in Motor 2</button><br>";
 String html5 = "<button onMouseDown=\"call('/motor2_unreel')\" onMouseUp=\"call('/motors_stop')\">Unreel Motor 2</button><br>";
 String html6 = "<button onMouseDown=\"call('/motors_stop')\">Motors off</button><br>";
-#ifdef ADAFRUIT_NEOPIXEL_H
-String html7 = "<button onMouseDown=\"call('/led_on')\">LED blink on</button> <code>setColors(BRIGHT)</code><br>";
-String html8 = "<button onMouseDown=\"call('/led_off')\">LED off</button> <code>setColors(0)</code><br>";
-#else
-String html7 = "<button onMouseDown=\"call('/led_on')\">LED on</button> <code>digitalWrite(LED, LOW)</code><br>";
-String html8 = "<button onMouseDown=\"call('/led_off')\">LED off</button> <code>digitalWrite(LED, HIGH)</code><br>";
-#endif
-String html9 = "<button onMouseDown=\"call('/test_1')\">test 2000 2000</button> <code>roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 2000, 0); roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 2000, 0);</code><br>";
-String html10 = "<button onMouseDown=\"call('/test_2')\">test 2000 4000</button> <code>roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 2000, 0); roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 4000, 0);</code><br>";
-String html11 = "<button onMouseDown=\"call('/test_3')\">test 4000 4000</button> <code>roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 4000, 0); roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 4000, 0);</code><br>";
-String html12 = "<button onMouseDown=\"call('/test_4')\">test 4000 2000</button> <code>roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 4000, 0); roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 2000, 0);</code><br>";
-// String html13 = "<button onMouseDown=\"fetch('/shape').then(updateInfo);\">shape</button><br>";
-// String html14 = "<button onMouseDown=\"fetch('/flush').then(updateInfo);\">What does flush do?</button><br>";
-String html15 = "<button onMouseDown=\"fetch('/reset_enc').then(updateInfo);\">Reset Encoders</button><br>";
+String html7 = "<button onMouseDown=\"call('/led_on')\">LED green</button><br>";
+String html8 = "<button onMouseDown=\"call('/led_off')\">LED off</button><br>";
+String html9 = "<button onMouseDown=\"call('/home_custom')\">Move 1800:4550</button><br>";
+String html10 = "<button onMouseDown=\"call('/home_00')\">Home 0:0</button><br>";
+String html11 = "<button onMouseDown=\"fetch('/reset_enc').then(updateInfo);\">Reset Encoders</button><br>";
+String html12 = "<button onMouseDown=\"fetch('/hold').then(updateInfo);\">Hold Current position</button><br>";
+String html13 = "<button onMouseDown=\"fetch('/shape').then(updateInfo);\">Hello Shape</button><br>";
 String html88 = "<pre id='status'>wait</pre><script>const stat = document.querySelector('#status'); const noConn = (err) => {stat.innerText = err.toString()}; const updateInfo = (res) => res.json().then((info) => { stat.style.background='#eee'; stat.innerText = JSON.stringify(info, null, 2); }); const call = (url) => {stat.style.background='#ccc'; const controller = new AbortController(); const to = setTimeout(() => controller.abort(), 900); fetch(url, { signal: controller.signal }).then(updateInfo).then(() => {clearTimeout(to)}).catch(noConn);}; setInterval(() => {call('/info')}, 1000);</script>";
 String html99 = "</body></html>";
 String request = "";
 
-#ifdef ADAFRUIT_NEOPIXEL_H
 #define PIN 5
 #define NUMPIXELS 1
 #define DELAYVAL 100
 #define BRIGHT 63
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_RGB + NEO_KHZ800);
 unsigned long blink_nextMillis = 0;
-byte cIndex = 0;
 byte bright = BRIGHT;
-int colors[12];
-#else
-#define LED 2
-#endif
 
 void setup() {
   WiFi.mode(WIFI_STA);
@@ -65,32 +57,11 @@ void setup() {
   server.begin();
   roboclaw.begin(38400);
 
-#ifdef ADAFRUIT_NEOPIXEL_H
   blink_nextMillis = millis() + DELAYVAL;
-  setColors(BRIGHT);
   pixels.begin();
-#else
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, HIGH);
-#endif
+  pixels.setPixelColor(0, pixels.Color(0, 0, BRIGHT));
+  pixels.show();
 }
-
-#ifdef ADAFRUIT_NEOPIXEL_H
-void setColors(byte b) {
-  colors[0] = pixels.Color(b, 0, 0);
-  colors[1] = pixels.Color(0, 0, 0);
-  colors[2] = pixels.Color(b, b, 0);
-  colors[3] = pixels.Color(0, 0, 0);
-  colors[4] = pixels.Color(0, b, 0);
-  colors[5] = pixels.Color(0, 0, 0);
-  colors[6] = pixels.Color(0, b, b);
-  colors[7] = pixels.Color(0, 0, 0);
-  colors[8] = pixels.Color(0, 0, b);
-  colors[9] = pixels.Color(0, 0, 0);
-  colors[10] = pixels.Color(b, 0, b);
-  colors[11] = pixels.Color(0, 0, 0);
-}
-#endif
 
 void sendInfo(WiFiClient client) {
 
@@ -118,10 +89,9 @@ void sendInfo(WiFiClient client) {
   client.print(",\"voltage\":");
   client.print((float)roboclaw.ReadMainBatteryVoltage(0x80)/10);
 
-#ifdef ADAFRUIT_NEOPIXEL_H
-  client.print(",\"led\":");
-  client.print(colors[0] == 0 ? "false" : "true");
-#endif
+  client.print(",\"shapeIndex\":");
+  client.print(shapeIndex);
+
   client.print("}");
 }
 
@@ -139,15 +109,41 @@ void getBuffers(uint8_t *buffers) {
 
 void loop() {
 
-#ifdef ADAFRUIT_NEOPIXEL_H
-  unsigned long currentMillis = millis();
-  if (currentMillis >= blink_nextMillis) {
-    blink_nextMillis = currentMillis + DELAYVAL;
-    cIndex = (cIndex + 1) % 12;
-    pixels.setPixelColor(0, colors[cIndex]);
+  // need to keep moving
+  if (shapeIndex < SHAPE_SIZE) {
+
+    uint32_t nextCoordinatesL = shape[shapeIndex][0];
+    uint32_t nextCoordinatesR = shape[shapeIndex][1];
+
+    uint32_t currentPosL;
+    uint32_t currentPosR;
+
+    roboclaw.ReadEncoders(0x80, currentPosL, currentPosR);
+
+    if (
+      (abs(nextCoordinatesL - currentPosL) < POS_THRESHOLD) &&
+      (abs(nextCoordinatesR - currentPosR) < POS_THRESHOLD)
+    ) {
+      shapeIndex += 1;
+      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][0], 1);
+      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][1], 1);
+      pixels.setPixelColor(0, shape[shapeIndex][2]);
+      pixels.show();
+    }
+
     pixels.show();
+  } else if (shapeIndex == SHAPE_SIZE) {
+    shapeIndex += 1;
+    pixels.setPixelColor(0, 0);
+    pixels.show();
+    roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
+    roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
   }
-#endif
+
+//  unsigned long currentMillis = millis();
+//  if (currentMillis >= blink_nextMillis) {
+//    blink_nextMillis = currentMillis + DELAYVAL;
+//  }
 
   WiFiClient client = server.available();
 
@@ -158,33 +154,33 @@ void loop() {
     if (request.indexOf("info") > 0){ sendInfo(client); return; }
     //if (request.indexOf("flush") > 0){ roboclaw.flush(); sendInfo(client); return; }
 
-    else if (request.indexOf("test_1") > 0){
-      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 2000, 0);
-      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 2000, 0);
+    else if (request.indexOf("home_custom") > 0){
+      // Move to 1000:1000 instantly
+      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, HOME_SPEED, DECEL, 1800, 1);
+      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, HOME_SPEED, DECEL, 4550, 1);
       sendInfo(client); return;
     }
 
-    else if (request.indexOf("test_2") > 0){
-      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 2000, 0);
-      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 4000, 0);
+    else if (request.indexOf("home_00") > 0){
+      // Move home instantly
+      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
+      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
       sendInfo(client); return;
     }
 
-    else if (request.indexOf("test_3") > 0){
-      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 4000, 0);
-      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 4000, 0);
-      sendInfo(client); return;
+    else if (request.indexOf("shape") > 0) {
+      shapeIndex = 0;
+
+      pixels.setPixelColor(0, 0);
+      pixels.show();
+
+      // initiate moving to first position
+      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][0], 1);
+      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][1], 1);
+
+      sendInfo(client);
+      return;
     }
-
-    else if (request.indexOf("test_4") > 0){
-      roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, 4000, 0);
-      roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, 2000, 0);
-      sendInfo(client); return;
-    }
-
-    // else if (request.indexOf("shape") > 0) { sendInfo(client); return; }
-
-#define REEL_SPEED 15
 
     else if (request.indexOf("motor1_reel_in") > 0){ roboclaw.ForwardM1(0x80, REEL_SPEED); sendInfo(client); return; }
     else if (request.indexOf("motor1_unreel") > 0){ roboclaw.BackwardM1(0x80, REEL_SPEED); sendInfo(client); return; }
@@ -192,14 +188,34 @@ void loop() {
     else if (request.indexOf("motor2_unreel") > 0){ roboclaw.BackwardM2(0x80, REEL_SPEED); sendInfo(client); return; }
     else if (request.indexOf("motors_stop") > 0){ roboclaw.ForwardM1(0x80, 0); roboclaw.ForwardM2(0x80, 0); sendInfo(client); return; }
     else if (request.indexOf("reset_enc") > 0){ roboclaw.ResetEncoders(0x80); sendInfo(client); return; }
+    else if (request.indexOf("hold") > 0) {
 
-#ifdef ADAFRUIT_NEOPIXEL_H
-    else if (request.indexOf("led_on") > 0){ setColors(BRIGHT); sendInfo(client); return; }
-    else if (request.indexOf("led_off") > 0){ setColors(0); sendInfo(client); return; }
-#else
-    else if (request.indexOf("led_on") > 0){ digitalWrite(LED, LOW); sendInfo(client); return; }
-    else if (request.indexOf("led_off") > 0){ digitalWrite(LED, HIGH); sendInfo(client); return;}
-#endif
+      uint32_t currentPosL;
+      uint32_t currentPosR;
+      roboclaw.ReadEncoders(0x80, currentPosL, currentPosR);
+
+      // Move to current pos and hold instantly
+      roboclaw.SpeedAccelDeccelPositionM1(0x80, 0, HOME_SPEED, 0, currentPosL, 1);
+      roboclaw.SpeedAccelDeccelPositionM2(0x80, 0, HOME_SPEED, 0, currentPosR, 1);
+
+      sendInfo(client);
+      return;
+    }
+
+
+
+    else if (request.indexOf("led_on") > 0){
+      pixels.setPixelColor(0, pixels.Color(0, BRIGHT, 0));
+      pixels.show();
+      sendInfo(client);
+      return;
+    }
+    else if (request.indexOf("led_off") > 0){
+      pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+      pixels.show();
+      sendInfo(client);
+      return;
+    }
 
     client.println(html1);
     client.println(html2);
@@ -213,9 +229,7 @@ void loop() {
     client.println(html10);
     client.println(html11);
     client.println(html12);
-    // client.println(html13);
-    // client.println(html14);
-    client.println(html15);
+    client.println(html13);
 
     client.println(html88);
     client.println(html99);
