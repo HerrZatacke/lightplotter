@@ -42,7 +42,7 @@ String html88 = "<pre id='status'>wait</pre><script>const stat = document.queryS
 String html99 = "</body></html>";
 String request = "";
 
-#define PIN 5
+#define PIN 2
 #define NUMPIXELS 10
 #define DELAYVAL 100
 #define BRIGHT 191
