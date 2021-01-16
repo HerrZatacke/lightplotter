@@ -28,24 +28,28 @@ String html3 = "<button onMouseDown=\"call('/motor1_unreel')\" onMouseUp=\"call(
 String html4 = "<button onMouseDown=\"call('/motor2_reel_in')\" onMouseUp=\"call('/motors_stop')\">Reel in Motor 2</button><br>";
 String html5 = "<button onMouseDown=\"call('/motor2_unreel')\" onMouseUp=\"call('/motors_stop')\">Unreel Motor 2</button><br>";
 String html6 = "<button onMouseDown=\"call('/motors_stop')\">Motors off</button><br>";
-String html7 = "<button onMouseDown=\"call('/led_on')\">LED green</button><br>";
-String html8 = "<button onMouseDown=\"call('/led_off')\">LED off</button><br>";
-String html9 = "<button onMouseDown=\"call('/home_custom')\">Move 1800:4550</button><br>";
-String html10 = "<button onMouseDown=\"call('/home_00')\">Home 0:0</button><br>";
-String html11 = "<button onMouseDown=\"fetch('/reset_enc').then(updateInfo);\">Reset Encoders</button><br>";
-String html12 = "<button onMouseDown=\"fetch('/hold').then(updateInfo);\">Hold Current position</button><br>";
-String html13 = "<button onMouseDown=\"fetch('/shape').then(updateInfo);\">Hello Shape</button><br>";
+String html7 = "<button onMouseDown=\"call('/led_on')\">LEDs green</button><br>";
+String html8 = "<button onMouseDown=\"call('/led_off')\">LEDs off</button><br>";
+String html9 = "<button onMouseDown=\"call('/circle_0')\">Circle 0</button><br>";
+String html10 = "<button onMouseDown=\"call('/circle_1')\">Circle 1</button><br>";
+String html11 = "<button onMouseDown=\"call('/circle_2')\">Circle 2</button><br>";
+String html12 = "<button onMouseDown=\"call('/home_custom')\">Move 1800:4550</button><br>";
+String html13 = "<button onMouseDown=\"call('/home_00')\">Home 0:0</button><br>";
+String html14 = "<button onMouseDown=\"fetch('/reset_enc').then(updateInfo);\">Reset Encoders</button><br>";
+String html15 = "<button onMouseDown=\"fetch('/hold').then(updateInfo);\">Hold Current position</button><br>";
+String html16 = "<button onMouseDown=\"fetch('/shape').then(updateInfo);\">Hello Shape</button><br>";
 String html88 = "<pre id='status'>wait</pre><script>const stat = document.querySelector('#status'); const noConn = (err) => {stat.innerText = err.toString()}; const updateInfo = (res) => res.json().then((info) => { stat.style.background='#eee'; stat.innerText = JSON.stringify(info, null, 2); }); const call = (url) => {stat.style.background='#ccc'; const controller = new AbortController(); const to = setTimeout(() => controller.abort(), 900); fetch(url, { signal: controller.signal }).then(updateInfo).then(() => {clearTimeout(to)}).catch(noConn);}; setInterval(() => {call('/info')}, 1000);</script>";
 String html99 = "</body></html>";
 String request = "";
 
 #define PIN 5
-#define NUMPIXELS 1
+#define NUMPIXELS 10
 #define DELAYVAL 100
-#define BRIGHT 63
+#define BRIGHT 191
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_RGB + NEO_KHZ800);
 unsigned long blink_nextMillis = 0;
 byte bright = BRIGHT;
+byte circle = 0;
 
 void setup() {
   WiFi.mode(WIFI_STA);
@@ -59,7 +63,22 @@ void setup() {
 
   blink_nextMillis = millis() + DELAYVAL;
   pixels.begin();
-  pixels.setPixelColor(0, pixels.Color(0, 0, BRIGHT));
+  setPixels(pixels.Color(0, 0, BRIGHT));
+
+}
+
+void setPixels(uint32_t color) {
+  for (byte i = 0; i < NUMPIXELS; i++) {
+    if (
+      (circle == 0 && i > 0) ||
+      (circle > 0 && i == 0) ||
+      (circle == 1 && i > 3)
+    ) {
+      pixels.setPixelColor(i, 0);
+    } else {
+      pixels.setPixelColor(i, color);
+    }
+  }
   pixels.show();
 }
 
@@ -91,6 +110,9 @@ void sendInfo(WiFiClient client) {
 
   client.print(",\"shapeIndex\":");
   client.print(shapeIndex);
+
+  client.print(",\"circle\":");
+  client.print(circle);
 
   client.print("}");
 }
@@ -127,15 +149,13 @@ void loop() {
       shapeIndex += 1;
       roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][0], 1);
       roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][1], 1);
-      pixels.setPixelColor(0, shape[shapeIndex][2]);
-      pixels.show();
+      setPixels(shape[shapeIndex][2]);
     }
 
-    pixels.show();
   } else if (shapeIndex == SHAPE_SIZE) {
     shapeIndex += 1;
-    pixels.setPixelColor(0, 0);
-    pixels.show();
+    setPixels(0);
+
     roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
     roboclaw.SpeedAccelDeccelPositionM2(0x80, ACCEL, HOME_SPEED, DECEL, 0, 1);
   }
@@ -170,9 +190,7 @@ void loop() {
 
     else if (request.indexOf("shape") > 0) {
       shapeIndex = 0;
-
-      pixels.setPixelColor(0, 0);
-      pixels.show();
+      setPixels(0);
 
       // initiate moving to first position
       roboclaw.SpeedAccelDeccelPositionM1(0x80, ACCEL, SPEED, DECEL, shape[shapeIndex][0], 1);
@@ -205,14 +223,30 @@ void loop() {
 
 
     else if (request.indexOf("led_on") > 0){
-      pixels.setPixelColor(0, pixels.Color(0, BRIGHT, 0));
-      pixels.show();
+      setPixels(pixels.Color(0, BRIGHT, 0));
       sendInfo(client);
       return;
     }
     else if (request.indexOf("led_off") > 0){
-      pixels.setPixelColor(0, pixels.Color(0, 0, 0));
-      pixels.show();
+      setPixels(0);
+      sendInfo(client);
+      return;
+    }
+    else if (request.indexOf("circle_0") > 0){
+      circle = 0;
+      setPixels(0);
+      sendInfo(client);
+      return;
+    }
+    else if (request.indexOf("circle_1") > 0){
+      circle = 1;
+      setPixels(0);
+      sendInfo(client);
+      return;
+    }
+    else if (request.indexOf("circle_2") > 0){
+      circle = 2;
+      setPixels(0);
       sendInfo(client);
       return;
     }
@@ -230,6 +264,9 @@ void loop() {
     client.println(html11);
     client.println(html12);
     client.println(html13);
+    client.println(html14);
+    client.println(html15);
+    client.println(html16);
 
     client.println(html88);
     client.println(html99);
