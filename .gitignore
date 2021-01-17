@@ -14,3 +14,4 @@ yarn-error.log*
 /src/embedded/lightplotter/credentials.h
 shape.h
 *.pdf
+/src/embedded/lightplotter/data/conf.json

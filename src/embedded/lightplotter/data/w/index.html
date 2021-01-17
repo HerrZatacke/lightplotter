@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Control RoboClaw</title>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=yes'>
+  <style>
+  pre {
+    padding: 6px;
+  }
+
+  body {
+    background: black;
+    color: #fff;
+    width: 200px;
+    padding-left: calc(100vw - 220px);
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #204;
+    color: #fff;
+    border: 2px solid currentColor;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background: #609;
+  }
+  </style>
+</head>
+<body>
+<p>This file is temporary - the full embedded web sources are not stored on the ESP</p>
+<button onMouseDown="call('motor1_reel_in')" onMouseUp="call('motors_stop')">Reel in Motor 1</button><br>
+<button onMouseDown="call('motor1_unreel')" onMouseUp="call('motors_stop')">Unreel Motor 1</button><br>
+<button onMouseDown="call('motor2_reel_in')" onMouseUp="call('motors_stop')">Reel in Motor 2</button><br>
+<button onMouseDown="call('motor2_unreel')" onMouseUp="call('motors_stop')">Unreel Motor 2</button><br>
+<button onMouseDown="call('motors_stop')">Motors off</button><br>
+<button onMouseDown="call('led_on')">LEDs green</button><br>
+<button onMouseDown="call('led_off')">LEDs off</button><br>
+<button onMouseDown="call('circle_0')">Circle 0</button><br>
+<button onMouseDown="call('circle_1')">Circle 1</button><br>
+<button onMouseDown="call('circle_2')">Circle 2</button><br>
+<button onMouseDown="call('home_custom')">Move 1800:4550</button><br>
+<button onMouseDown="call('home_00')">Home 0:0</button><br>
+<button onMouseDown="call('reset_enc')">Reset Encoders</button><br>
+<button onMouseDown="call('hold')">Hold Current position</button><br>
+<button onMouseDown="call('shape')">Internal Shape</button><br>
+<pre id='status'>wait</pre>
+<script>
+  const stat = document.querySelector('#status');
+
+  const noConn = (err) => {
+    stat.innerText = err.toString();
+  };
+
+  const updateInfo = (res) => res.json()
+    .then((info) => {
+      stat.style.background = '#111';
+      stat.innerText = JSON.stringify(info, null, 2);
+    });
+
+  const call = (command) => {
+    stat.style.background = '#444';
+    const controller = new AbortController();
+    const to = setTimeout(() => controller.abort(), 900);
+    fetch('/command', {
+      method: 'POST',
+      body: JSON.stringify({ command }),
+      signal: controller.signal,
+    })
+      .then(updateInfo)
+      .then(() => {
+        clearTimeout(to);
+      })
+      .catch(noConn);
+  };
+
+  setInterval(() => {
+    call('info');
+  }, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "mdns": "lightplotter",
+  "ap": {
+    "ssid":"lightplotter",
+    "psk":"lightplotter"
+  },
+  "networks": [
+    {
+      "ssid":"Your SSID",
+      "psk":"Your wifi password"
+    }
+  ]
+}
