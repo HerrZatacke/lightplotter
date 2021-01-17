@@ -13,3 +13,4 @@ yarn-error.log*
 /steps.txt
 /src/embedded/lightplotter/credentials.h
 shape.h
+*.pdf
